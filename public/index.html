@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizador de Tarefas</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/locales/pt-br.js"></script> <!-- Adicionando o arquivo de localização em português -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <div class="container-task">
+        <h1>Organizador de Tarefas</h1>
+        <div class="input-container">
+            <input type="text" id="task-input" placeholder="Adicione uma nova tarefa">
+            <button id="add-task-button">Adicionar</button>
+        </div>
+        <ul id="task-list"></ul>
+    </div>
+        
+    
+    <div class="container-calendar">
+        <div id="calendar"></div> <!-- Elemento para renderizar o calendário -->
+    </div>
+    <div id="alert-container"></div>
+    <div id="card-container">
+        <div id="card-list"></div>
+        <button id="add-card-button">Adicionar Cartão</button>
+    </div>
+    
+    
+    
+
+</div>
+    <script src="script.js"></script>
+   
+   
+</body>
+</html>
