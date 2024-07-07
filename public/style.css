@@ -106,16 +106,21 @@ li.completed {
     text-decoration: line-through;
     color: gray;
 }
-/* Alerta estilizado */
 #alert-container {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 1000;
-    width: 300px;
-    text-align: center;
+    padding: 20px;
+    background-color: #f8d7da; /* Cor de fundo do alerta */
+    color: #721c24; /* Cor do texto do alerta */
+    border: 1px solid #f5c6cb; /* Borda do alerta */
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* Certifique-se de que o alerta esteja acima de outros elementos */
+    display: none; /* Ocultar por padrão */
 }
+
 
 .alert {
     padding: 15px;
@@ -153,4 +158,76 @@ li.completed {
     float: right;
     width: 200px;
     margin-right: -5%;
+}
+/*
+#card-container {
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+}
+
+.input-container {
+    display: flex;
+    gap: 10px;
+}
+
+#card-list {
+    margin-top: 20px;
+}
+
+#alert-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none;
+}
+*/
+#task-stats {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+#task-stats div {
+    margin-bottom: 5px;
+}
+#task-count {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.task-statistics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Duas colunas */
+    gap: 20px; /* Espaçamento entre os cards */
+    padding: 10px;
+    padding-bottom: 20px;
+}
+
+.statistic-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra estilo card */
+}
+
+.statistic-card p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.statistic-card span {
+    font-weight: bold;
 }

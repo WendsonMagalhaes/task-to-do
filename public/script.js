@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const taskInput = document.getElementById("task-input");
     const addTaskButton = document.getElementById("add-task-button");
     const taskList = document.getElementById("task-list");
+    const taskCountToday = document.getElementById('task-count-today');
+
 
     addTaskButton.addEventListener("click", addTask);
     taskList.addEventListener("click", handleTaskClick);
@@ -29,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const taskItem = document.createElement("li");
                     taskItem.dataset.id = data.id;
                     taskItem.textContent = `${formatDate(data.date)} - ${data.task}`;
-    
+                    updateTaskCount();
                     const buttonContainer = document.createElement("div");
                     buttonContainer.classList.add("button-container");
     
@@ -54,6 +56,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     taskList.appendChild(taskItem);
                     taskInput.value = "";
                     showAlert('success', 'Tarefa adicionada com sucesso!');
+                     // Atualiza as estatísticas de tarefas após adicionar a tarefa
+                    const totalTasks = document.querySelectorAll('#task-list li').length;
+                    const completedTasks = document.querySelectorAll('#task-list li.completed').length;
+                    updateTaskCount(totalTasks, completedTasks);
                 }
             })
             .catch(err => {
@@ -134,6 +140,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 deleteButton.classList.add("delete-button");
                 buttonContainer.appendChild(deleteButton);
             }
+            // Atualiza a contagem de tarefas após completar a operação
+            const totalTasks = document.querySelectorAll('#task-list li').length;
+            const completedTasks = document.querySelectorAll('#task-list li.completed').length;
+            updateTaskCount(totalTasks, completedTasks);
         })
         .catch(err => console.error('Erro ao completar tarefa:', err));
     }
@@ -146,19 +156,25 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(data => {
                 const taskList = document.getElementById("task-list");
                 taskList.innerHTML = '';
-
+    
+                let totalTasks = 0; // Variável para contar o total de tarefas
+                let completedTasks = 0; // Variável para contar o total de tarefas concluídas
+    
                 data.tasks.forEach(task => {
                     if (task.date === selectedDate) {
+                        totalTasks++; // Incrementa o total de tarefas
+    
                         const taskItem = document.createElement("li");
                         taskItem.dataset.id = task.id;
                         taskItem.textContent = `${formatDate(task.date)} - ${task.task}`;
     
                         const buttonContainer = document.createElement("div");
                         buttonContainer.classList.add("button-container");
-
+    
                         if (task.completed) {
                             taskItem.classList.add("completed");
-
+                            completedTasks++; // Incrementa o total de tarefas concluídas
+    
                             const reopenButton = document.createElement("button");
                             reopenButton.textContent = "Reabrir";
                             reopenButton.addEventListener("click", () => {
@@ -174,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             });
                             completeButton.classList.add("complete-button");
                             buttonContainer.appendChild(completeButton);
-
+    
                             const deleteButton = document.createElement("button");
                             deleteButton.textContent = "Excluir";
                             deleteButton.addEventListener("click", () => {
@@ -183,11 +199,14 @@ document.addEventListener("DOMContentLoaded", () => {
                             deleteButton.classList.add("delete-button");
                             buttonContainer.appendChild(deleteButton);
                         }
-
+    
                         taskItem.appendChild(buttonContainer);
                         taskList.appendChild(taskItem);
                     }
                 });
+    
+                // Atualiza a contagem de tarefas na interface
+                updateTaskCount(totalTasks, completedTasks);
             })
             .catch(err => console.error('Erro ao carregar tarefas:', err));
     }
@@ -221,9 +240,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const taskItem = document.querySelector(`li[data-id="${taskId}"]`);
             if (taskItem && taskItem.parentNode) {
                 taskItem.parentNode.removeChild(taskItem);
+                 // Atualiza a contagem de tarefas
+                const totalTasks = document.querySelectorAll('#task-list li').length;
+                const completedTasks = document.querySelectorAll('#task-list li.completed').length;
+            updateTaskCount(totalTasks, completedTasks);
             } else {
                 console.warn('Elemento da tarefa não encontrado ou já removido do DOM');
             }
+
         })
         .catch(err => console.error('Erro ao excluir tarefa:', err));
     }
@@ -251,9 +275,14 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 calendar.today();
                 selectedDate = calendar.getDate().toISOString().split('T')[0];
+                loadTasks(selectedDate); // Carrega tarefas para a data inicial
             }
 
-            loadTasks(selectedDate);
+            // Atualiza as tarefas quando mudar de data no calendário
+            calendar.on('dateClick', function(info) {
+                selectedDate = info.dateStr;
+                loadTasks(selectedDate);
+            });
         } else {
             console.error('Elemento #calendar não encontrado.');
         }
@@ -382,18 +411,80 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(err => console.error('Erro ao excluir cartão:', err));
     }
     function showAlert(type, message) {
-        // Implemente o código para exibir um alerta na interface do usuário
-        console.error(`[${type.toUpperCase()}] ${message}`);
-        // Exemplo: mostrar alerta em uma div na página
-        const alertDiv = document.createElement('div');
-        alertDiv.classList.add('alert', `alert-${type}`);
-        alertDiv.textContent = message;
-        document.body.appendChild(alertDiv);
+        const alertContainer = document.getElementById('alert-container');
+        alertContainer.textContent = message;
+        alertContainer.style.display = 'block';
     
-        // Remover o alerta após alguns segundos
+        // Defina uma cor de fundo com base no tipo de alerta
+        if (type === 'success') {
+            alertContainer.style.backgroundColor = '#d4edda';
+            alertContainer.style.color = '#155724';
+            alertContainer.style.borderColor = '#c3e6cb';
+        } else if (type === 'danger') {
+            alertContainer.style.backgroundColor = '#f8d7da';
+            alertContainer.style.color = '#721c24';
+            alertContainer.style.borderColor = '#f5c6cb';
+        }
+    
+        // Esconder o alerta após 3 segundos (opcional)
         setTimeout(() => {
-            alertDiv.remove();
-        }, 3000); // Remove o alerta após 3 segundos
+            alertContainer.style.display = 'none';
+        }, 1000);
     }
+    
+    
+    const cardTitleInput = document.getElementById('card-title-input');
+    const adddCardButton = document.getElementById('add-card-button');
+    const cardList = document.getElementById('card-list');
+
+    adddCardButton.addEventListener('click', function() {
+        if (cardTitleInput.value.trim() === '') {
+            showAlert('danger', 'O título do cartão não pode estar vazio.');
+            return;
+        }
+
+        const card = document.createElement('div');
+        card.textContent = cardTitleInput.value;
+        card.className = 'card';
+        cardList.appendChild(card);
+
+        cardTitleInput.value = '';
+        showAlert('success', 'Cartão adicionado com sucesso!');
+    });
+
+
+    function updateTaskStats() {
+        const tasks = document.querySelectorAll('#card-list .card');
+        const completedTasks = document.querySelectorAll('#card-list .card.completed');
+        
+        const totalTasks = tasks.length;
+        const totalCompletedTasks = completedTasks.length;
+        const totalIncompleteTasks = totalTasks - totalCompletedTasks;
+        
+        const percentage = totalTasks === 0 ? 0 : (totalCompletedTasks / totalTasks) * 100;
+        
+        document.getElementById('total-tasks').textContent = totalTasks;
+        document.getElementById('completed-tasks').textContent = totalCompletedTasks;
+        document.getElementById('incomplete-tasks').textContent = totalIncompleteTasks;
+        document.getElementById('completion-percentage').textContent = `${percentage.toFixed(2)}%`;
+    }
+
+ 
+    function updateTaskCount(totalTasks, completedTasks) {
+        const taskCountElement = document.getElementById("task-count");
+        const completedCountElement = document.getElementById("completed-count");
+        const notCompletedCountElement = document.getElementById("not-completed-count");
+        const percentageElement = document.getElementById("completion-percentage");
+        const totalActivitiesElement = document.getElementById("total-activities");
+    
+        taskCountElement.textContent = totalTasks;
+        completedCountElement.textContent = completedTasks;
+        notCompletedCountElement.textContent = totalTasks - completedTasks;
+    
+        const percentage = totalTasks > 0 ? ((completedTasks / totalTasks) * 100).toFixed(2) : 0;
+        percentageElement.textContent = `${percentage}%`;
+    
+    }
+    
     
 });

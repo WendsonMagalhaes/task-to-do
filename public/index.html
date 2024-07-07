@@ -14,28 +14,41 @@
 <body>
     <div class="container">
         <div class="container-task">
-        <h1>Organizador de Tarefas</h1>
-        <div class="input-container">
-            <input type="text" id="task-input" placeholder="Adicione uma nova tarefa">
-            <button id="add-task-button">Adicionar</button>
+            <h1>Organizador de Tarefas</h1>
+            
+            <div class="task-statistics">
+                <div class="statistic-card">
+                    <p>Total de tarefas: <span id="task-count"></span></p>
+                </div>
+                <div class="statistic-card">
+                    <p>Tarefas completadas: <span id="completed-count"></span></p>
+                </div>
+                <div class="statistic-card">
+                    <p>Tarefas não completadas: <span id="not-completed-count"></span></p>
+                </div>
+                <div class="statistic-card">
+                    <p>Porcentagem de conclusão: <span id="completion-percentage"></span></p>
+                </div>
+            </div>
+            
+            <div class="input-container">
+                <input type="text" id="task-input" placeholder="Adicione uma nova tarefa">
+                <button id="add-task-button">Adicionar</button>
+            </div>
+            <ul id="task-list"></ul>
         </div>
-        <ul id="task-list"></ul>
-    </div>
+        <div class="container-calendar">
+            <div id="calendar"></div> <!-- Elemento para renderizar o calendário -->
+        </div>
+        <div id="card-container">
+            <input type="text" id="card-title-input" placeholder="Digite o título do novo cartão">
+            <button id="add-card-button">Adicionar Cartão</button>
+            <div id="card-list"></div>
+        </div>
+        <div id="alert-container"></div>
         
-    
-    <div class="container-calendar">
-        <div id="calendar"></div> <!-- Elemento para renderizar o calendário -->
     </div>
-    <div id="alert-container"></div>
-    <div id="card-container">
-        <div id="card-list"></div>
-        <button id="add-card-button">Adicionar Cartão</button>
-    </div>
-    
-    
-    
 
-</div>
     <script src="script.js"></script>
    
    
