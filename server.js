@@ -4,7 +4,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
 const app = express();
-const PORT = 3070;
+const port = 3077;
 
 // Conectar ao banco de dados SQLite
 const db = new sqlite3.Database('tasks.db');
@@ -201,6 +201,7 @@ function validateIfExistsNewTask(task, date, callback) {
     });
 }
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+// Inicia o servidor
+app.listen(process.env.PORT || port, () => {
+    console.log('SERVIDOR RODANDO')
 });
