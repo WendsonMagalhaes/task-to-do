@@ -7,15 +7,17 @@ body {
     background-color: #f0f0f0;
     margin: 0;
 }
-.container{
+.container {
     display: grid;
     grid-template-columns: 2fr 1fr; /* Divide o container em duas colunas */
     gap: 10px; /* Espaçamento entre as colunas */
     background: #fff;
     max-width: 1300px;
-
-
+    min-height: 300px; /* Exemplo de altura mínima */
+    max-height: 900px; /* Exemplo de altura máxima */
+    overflow-y: auto; /* Adiciona barra de rolagem vertical conforme necessário */
 }
+
 .container-task {
    
     background: #fff;
