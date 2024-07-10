@@ -5,6 +5,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const taskCountToday = document.getElementById('task-count-today');
 
 
+    function obterValorDoSelect(idSelect) {
+        var select = document.getElementById(idSelect);
+        return select.options[select.selectedIndex].value;
+    }
+
     addTaskButton.addEventListener("click", addTask);
     taskList.addEventListener("click", handleTaskClick);
 
@@ -14,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function addTask() {
         const task = taskInput.value.trim();
         const date = selectedDate || new Date().toISOString().split('T')[0]; // Usa a data selecionada ou a data atual
+        const priority = obterValorDoSelect('priority');
         
         if (task) {
             fetch('/tasks', {
@@ -21,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ task, date, completed: false })
+                body: JSON.stringify({ task, date, priority, completed: false })
             })
             .then(response => response.json())
             .then(data => {
@@ -29,21 +35,43 @@ document.addEventListener("DOMContentLoaded", () => {
                     showAlert('danger', data.error);
                 } else {
                     const taskItem = document.createElement("li");
-                    taskItem.dataset.id = data.id;
-                    taskItem.textContent = `${formatDate(data.date)} - ${data.task}`;
+                    taskItem.dataset.id = data.id;  
+                    taskItem.dataset.priority = data.priority; // Adiciona o atributo de prioridade
+
+                    const starContainer = document.createElement("div");
+                    starContainer.classList.add("star-container");
+                    taskItem.innerHTML = `${formatDate(data.date)}`;   
+
+                    if (priority == 3)  {
+                        starContainer.innerHTML += '<i class="fa fa-star priority-star"></i>';
+
+                    } else if (priority == 2) {
+                        starContainer.innerHTML += '<i class="fa fa-star priority-star"></i><i class="fa fa-star priority-star"></i>';
+
+                    } else{
+                        starContainer.innerHTML += '<i class="fa fa-star priority-star"></i><i class="fa fa-star priority-star"></i><i class="fa fa-star priority-star"></i>';
+
+                    }  
+                    // Adicionando newElement dentro de taskItem
+                    taskItem.appendChild(starContainer);
+
+                    // Adicionando o restante do conteúdo de taskItem
+                    taskItem.innerHTML += `${data.task}`;   
+ 
                     updateTaskCount();
                     const buttonContainer = document.createElement("div");
                     buttonContainer.classList.add("button-container");
+                    
     
                     const completeButton = document.createElement("button");
-                    completeButton.textContent = data.completed ? "Reabrir" : "Concluir";
+                    completeButton.innerHTML = data.completed ? '<i class="fas fa-redo"></i>' : '<i class="fas fa-check"></i>';
                     completeButton.addEventListener("click", () => {
                         toggleTaskCompletion(data.id, !data.completed);
                     });
                     completeButton.classList.add("complete-button");
     
                     const deleteButton = document.createElement("button");
-                    deleteButton.textContent = "Excluir";
+                    deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
                     deleteButton.addEventListener("click", () => {
                         deleteTask(data.id);
                     });
@@ -54,9 +82,22 @@ document.addEventListener("DOMContentLoaded", () => {
     
                     taskItem.appendChild(buttonContainer);
                     taskList.appendChild(taskItem);
+
+                     // Busca todas as tarefas existentes
+                const tasks = Array.from(taskList.querySelectorAll('li'));
+
+                // Encontra a posição correta baseada na prioridade (decrescente)
+                const index = tasks.findIndex(item => data.priority < item.dataset.priority);
+
+                if (index === -1) {
+                    taskList.appendChild(taskItem); // Insere no final se não encontrou uma prioridade maior
+                } else {
+                    tasks[index].insertAdjacentElement('beforebegin', taskItem); // Insere antes da task com maior prioridade
+                }
+
                     taskInput.value = "";
                     showAlert('success', 'Tarefa adicionada com sucesso!');
-                     // Atualiza as estatísticas de tarefas após adicionar a tarefa
+                    // Atualiza as estatísticas de tarefas após adicionar a tarefa
                     const totalTasks = document.querySelectorAll('#task-list li').length;
                     const completedTasks = document.querySelectorAll('#task-list li.completed').length;
                     updateTaskCount(totalTasks, completedTasks);
@@ -68,17 +109,17 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     }
-
+    
     function handleTaskClick(event) {
-        const targetButton = event.target;
+        const targetButton = event.target.closest("button");
         const taskItem = targetButton.closest("li");
         const taskId = taskItem.dataset.id;
     
         if (!taskItem) return;
     
-        if (targetButton.textContent === "Excluir") {
+        if (targetButton.innerHTML.includes("fa-trash")) {
             deleteTask(taskId);
-        } else if (targetButton.textContent === "Concluir" || targetButton.textContent === "Reabrir") {
+        } else if (targetButton.innerHTML.includes("fa-check") || targetButton.innerHTML.includes("fa-redo")) {
             const completed = !taskItem.classList.contains("completed");
             toggleTaskCompletion(taskId, completed);
         }
@@ -104,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
             const completeButton = taskItem.querySelector(".complete-button");
             if (completeButton) {
-                completeButton.textContent = completed ? "Reabrir" : "Concluir";
+                completeButton.innerHTML = completed ? '<i class="fas fa-redo"></i>' : '<i class="fas fa-check"></i>';
             }
     
             const deleteButton = taskItem.querySelector(".delete-button");
@@ -117,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
             if (completed) {
                 const reopenButton = document.createElement("button");
-                reopenButton.textContent = "Reabrir";
+                reopenButton.innerHTML = '<i class="fas fa-redo"></i>';
                 reopenButton.addEventListener("click", () => {
                     toggleTaskCompletion(taskId, false);
                 });
@@ -125,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 buttonContainer.appendChild(reopenButton);
             } else {
                 const completeButton = document.createElement("button");
-                completeButton.textContent = "Concluir";
+                completeButton.innerHTML = '<i class="fas fa-check"></i>';
                 completeButton.addEventListener("click", () => {
                     toggleTaskCompletion(taskId, true);
                 });
@@ -133,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 buttonContainer.appendChild(completeButton);
     
                 const deleteButton = document.createElement("button");
-                deleteButton.textContent = "Excluir";
+                deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
                 deleteButton.addEventListener("click", () => {
                     deleteTask(taskId);
                 });
@@ -149,67 +190,86 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     
+    
+function loadTasks(selectedDate) {
+    fetch(`/tasks?date=${selectedDate}`)
+        .then(response => response.json())
+        .then(data => {
+            const sortedTasks = data.tasks.sort((a, b) => a.priority - b.priority); // Ordena as tasks pela prioridade decrescente
+            const taskList = document.getElementById("task-list");
+            taskList.innerHTML = '';
 
-    function loadTasks(selectedDate) {
-        fetch(`/tasks?date=${selectedDate}`)
-            .then(response => response.json())
-            .then(data => {
-                const taskList = document.getElementById("task-list");
-                taskList.innerHTML = '';
-    
-                let totalTasks = 0; // Variável para contar o total de tarefas
-                let completedTasks = 0; // Variável para contar o total de tarefas concluídas
-    
-                data.tasks.forEach(task => {
-                    if (task.date === selectedDate) {
-                        totalTasks++; // Incrementa o total de tarefas
-    
-                        const taskItem = document.createElement("li");
-                        taskItem.dataset.id = task.id;
-                        taskItem.textContent = `${formatDate(task.date)} - ${task.task}`;
-    
-                        const buttonContainer = document.createElement("div");
-                        buttonContainer.classList.add("button-container");
-    
-                        if (task.completed) {
-                            taskItem.classList.add("completed");
-                            completedTasks++; // Incrementa o total de tarefas concluídas
-    
-                            const reopenButton = document.createElement("button");
-                            reopenButton.textContent = "Reabrir";
-                            reopenButton.addEventListener("click", () => {
-                                toggleTaskCompletion(task.id, false);
-                            });
-                            reopenButton.classList.add("reopen-button");
-                            buttonContainer.appendChild(reopenButton);
-                        } else {
-                            const completeButton = document.createElement("button");
-                            completeButton.textContent = "Concluir";
-                            completeButton.addEventListener("click", () => {
-                                toggleTaskCompletion(task.id, true);
-                            });
-                            completeButton.classList.add("complete-button");
-                            buttonContainer.appendChild(completeButton);
-    
-                            const deleteButton = document.createElement("button");
-                            deleteButton.textContent = "Excluir";
-                            deleteButton.addEventListener("click", () => {
-                                deleteTask(task.id);
-                            });
-                            deleteButton.classList.add("delete-button");
-                            buttonContainer.appendChild(deleteButton);
-                        }
-    
-                        taskItem.appendChild(buttonContainer);
-                        taskList.appendChild(taskItem);
+            let totalTasks = 0; // Variável para contar o total de tarefas
+            let completedTasks = 0; // Variável para contar o total de tarefas concluídas
+
+            data.tasks.forEach(task => {
+                if (task.date === selectedDate) {
+                    totalTasks++; // Incrementa o total de tarefas
+
+                    const taskItem = document.createElement("li");
+                    taskItem.dataset.id = task.id;
+                    const starContainer = document.createElement("div");
+                    starContainer.classList.add("star-container");
+                    taskItem.innerHTML = `${formatDate(task.date)}`;  
+                    if (task.priority == 3)  {
+                        starContainer.innerHTML += '<i class="fa fa-star priority-star"></i>';
+
+                    } else if (task.priority == 2) {
+                        starContainer.innerHTML += '<i class="fa fa-star priority-star"></i><i class="fa fa-star priority-star"></i>';
+
+                    } else{
+                        starContainer.innerHTML += '<i class="fa fa-star priority-star"></i><i class="fa fa-star priority-star"></i><i class="fa fa-star priority-star"></i>';
+
+                    }  
+                    // Adicionando newElement dentro de taskItem
+                    taskItem.appendChild(starContainer);
+
+                    // Adicionando o restante do conteúdo de taskItem
+                    taskItem.innerHTML += `${task.task}`;  
+
+                    const buttonContainer = document.createElement("div");
+                    buttonContainer.classList.add("button-container");
+
+                    if (task.completed) {
+                        taskItem.classList.add("completed");
+                        completedTasks++; // Incrementa o total de tarefas concluídas
+
+                        const reopenButton = document.createElement("button");
+                        reopenButton.innerHTML = '<i class="fas fa-redo"></i>';
+                        reopenButton.addEventListener("click", () => {
+                            toggleTaskCompletion(task.id, false);
+                        });
+                        reopenButton.classList.add("reopen-button");
+                        buttonContainer.appendChild(reopenButton);
+                    } else {
+                        const completeButton = document.createElement("button");
+                        completeButton.innerHTML = '<i class="fas fa-check"></i>';
+                        completeButton.addEventListener("click", () => {
+                            toggleTaskCompletion(task.id, true);
+                        });
+                        completeButton.classList.add("complete-button");
+                        buttonContainer.appendChild(completeButton);
+
+                        const deleteButton = document.createElement("button");
+                        deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+                        deleteButton.addEventListener("click", () => {
+                            deleteTask(task.id);
+                        });
+                        deleteButton.classList.add("delete-button");
+                        buttonContainer.appendChild(deleteButton);
                     }
-                });
-    
-                // Atualiza a contagem de tarefas na interface
-                updateTaskCount(totalTasks, completedTasks);
-            })
-            .catch(err => console.error('Erro ao carregar tarefas:', err));
-    }
+
+                    taskItem.appendChild(buttonContainer);
+                    taskList.appendChild(taskItem);
+                }
+            });
+
+            // Atualiza a contagem de tarefas na interface
+            updateTaskCount(totalTasks, completedTasks);
+        })
+        .catch(err => console.error('Erro ao carregar tarefas:', err));
+}
+
 
     function formatDate(dateString) {
         if (!dateString) return "";
@@ -265,6 +325,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     selectedDate = info.startStr;
                     loadTasks(selectedDate);
                     console.log(selectedDate);
+                },
+                dateClick: function(info) {
+                    // Remove a seleção anterior
+                    var previouslySelected = document.querySelector('.fc-day-selected');
+                    if (previouslySelected) {
+                        previouslySelected.classList.remove('fc-day-selected');
+                    }
+
+                    // Adiciona a classe de dia selecionado ao dia clicado
+                    info.dayEl.classList.add('fc-day-selected');
                 }
             });
 

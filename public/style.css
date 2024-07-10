@@ -1,46 +1,91 @@
 body {
     font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f0f0f0;
+    background: #f4f4f4;
     margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+.header {
+    background-color: #1d3557;
+    padding: 20px;
+    color: #fff;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: sticky; /* Fixa o header no topo da página */
+    top: 0;
+    z-index: 1000; /* Garante que o header esteja acima de outros elementos */
+}
+
 .container {
+    margin-top: 50px;
     display: grid;
     grid-template-columns: 2fr 1fr; /* Divide o container em duas colunas */
-    gap: 10px; /* Espaçamento entre as colunas */
+    gap: 150px; /* Espaçamento entre as colunas */
     background: #fff;
     max-width: 1300px;
-    min-height: 300px; /* Exemplo de altura mínima */
-    max-height: 900px; /* Exemplo de altura máxima */
-    overflow-y: auto; /* Adiciona barra de rolagem vertical conforme necessário */
 }
 
 .container-task {
-   
     background: #fff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 700px;
-    grid-column: 1; /* Coloca o calendário na primeira coluna */
+    max-width: 800px;
+    grid-column: 1; /* Coloca o .container-task na primeira coluna */
+    margin-left: 50px; /* Ajuste o margin-left conforme necessário */
+    margin-top: 30px;
+    margin-bottom: 30px;
+    min-height: 300px; /* Exemplo de altura mínima */
+    max-height: 400px; /* Exemplo de altura máxima */
+    overflow-y: auto; /* Adiciona barra de rolagem vertical conforme necessário */
+    overflow-x: hidden;
+}
+.container-task-header{
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
     margin-left: 50px;
     margin-top: 30px;
-    margin-bottom: 30px;
+    margin-bottom: -140px;    
 
 }
+
 .container-calendar {
-    grid-column: 2; /* Coloca o calendário na primeira coluna */
-    width: 400px; /* Largura do calendário */
-    height: 400px; /* Altura do calendário */
-    margin-right: 50px;
-    margin-top: 30px;
+    grid-column: 2; /* Coloca o .container-calendar na segunda coluna */
+    width: 100%; /* Largura do .container-calendar */
+    max-width: 375px; /* Máxima largura do .container-calendar */
+    height: 375px; /* Altura do .container-calendar */
+    margin-left: auto; /* Coloca a margem esquerda automática para alinhar à direita */
+    margin-right: 50px; /* Remove a margem direita para ficar colado */
+    margin-top: -180px;
     margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+
+#calendar {
+    width:  500px ;/* Ajuste o tamanho conforme necessário */
+    height: 410px; /* Ajuste o tamanho conforme necessário */
+    transform: scale(0.85); /* Ajuste o zoom usando transform: scale */
+    overflow: hidden;
+    overflow-y: hidden;
 
 }
+
+
 
 
 h1 {
@@ -50,27 +95,43 @@ h1 {
 .input-container {
     display: flex;
     justify-content: space-between;
+    
+
 }
 
-input[type="text"] {
-    flex: 1;
+input[type="text"]{
+    flex: 2;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 2x solid #1d3557;
+    border-radius: 8px;
     margin-right: 10px;
+    font-size: 16px;
+}
+#priority {
+    flex: 0.5;
+    padding: 10px;
+    border: 5x solid #1d3557;
+    border-radius: 8px;
+    margin-right: 10px;
+    font-size: 16px;
+    background-color: #fff;
 }
 
 button {
     padding: 10px 20px;
-    border: none;
-    background-color: #28a745;
+    background-color: #005f73;
     color: white;
+    border: none;
+    padding: 5px 10px;
     border-radius: 4px;
     cursor: pointer;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
 }
 
 button:hover {
-    background-color: #218838;
+    background-color: #1d3557;
 }
 
 ul {
@@ -81,28 +142,36 @@ ul {
 li {
     background: #f8f8f8;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 1px solid #1d3557;
+    border-radius: 8px;
     margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    display: grid;
+    grid-template-columns: 0.5fr 0.5fr 2fr 1fr; /* Ajuste as proporções conforme necessário */
+    gap: 10px;
 }
 .complete-button{
     margin-right:5px;
     margin-left: 5px;
 }
 li button {
-    background-color: #dc3545;
+    background-color: #005f73;
     color: white;
     border: none;
     padding: 5px 10px;
     border-radius: 4px;
     cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    
+
 }
 
 li button:hover {
-    background-color: #c82333;
+    background-color: #1d3557;
 }
 li.completed {
     text-decoration: line-through;
@@ -157,10 +226,11 @@ li.completed {
     }
 }
 .button-container {
-    float: right;
-    width: 200px;
-    margin-right: -5%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px; /* Espaçamento entre os botões */
 }
+
 /*
 #card-container {
     margin: 10px;
@@ -211,14 +281,14 @@ li.completed {
 
 .task-statistics {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Duas colunas */
+    grid-template-columns: repeat(4, 1fr); /* Duas colunas */
     gap: 20px; /* Espaçamento entre os cards */
     padding: 10px;
-    padding-bottom: 20px;
+    width: 70%;
 }
 
 .statistic-card {
-    background-color: #fff;
+    background-color: #005f73;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra estilo card */
@@ -232,4 +302,79 @@ li.completed {
 
 .statistic-card span {
     font-weight: bold;
+}
+
+/* Personalização do FullCalendar */
+.fc {
+    --fc-bg-color: #fff;
+    --fc-border-color: #ddd;
+    --fc-today-bg-color: #005f73;
+    --fc-today-color: #fff; /* Cor do número do dia de hoje */
+    --fc-selected-bg-color: #1d3557;
+    --fc-selected-color: #fff; /* Cor do número do dia selecionado */
+    --fc-highlight-color: #1d3557;
+    --fc-event-bg-color: #005f73;
+    --fc-event-border-color: #005f73;
+    --fc-event-text-color: #fff;
+}
+
+.fc .fc-toolbar {
+    background: var(--fc-bg-color);
+    border-bottom: 1px solid var(--fc-border-color);
+}
+
+.fc .fc-toolbar h2 {
+    color: var(--fc-highlight-color);
+}
+
+.fc .fc-daygrid-day-number {
+    color: var(--fc-highlight-color);
+}
+
+
+.fc .fc-day-today .fc-daygrid-day-number {
+    color: var(--fc-today-color);
+}
+
+
+.fc .fc-day-today {
+    background: var(--fc-today-bg-color);
+}
+
+.fc .fc-daygrid-event {
+    background: var(--fc-event-bg-color);
+    border: 1px solid var(--fc-event-border-color);
+    color: var(--fc-event-text-color);
+}
+
+.fc .fc-daygrid-day.fc-day-selected .fc-daygrid-day-number {
+    color: var(--fc-selected-color);
+    color: var(--fc-today-color);
+
+}
+
+.fc .fc-daygrid-day.fc-day-selected {
+    background: var(--fc-selected-bg-color);
+    color: var(--fc-today-color);
+
+}
+
+.priority-low {
+    background-color: #d4edda;
+}
+
+.priority-medium {
+    background-color: #fff3cd;
+}
+
+.priority-high {
+    background-color: #f8d7da;
+}
+
+.fa-star {
+    margin: 0;
+    padding: 0;
+}
+.priority-star{
+    color:#005f73;
 }

@@ -4,7 +4,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
 const app = express();
-const port = 3040;
+const port = 3050;
 
 // Conectar ao banco de dados SQLite
 const db = new sqlite3.Database('tasks.db');
@@ -16,10 +16,11 @@ db.serialize(() => {
     // Criar tabela de tarefas se não existir
     db.run(`CREATE TABLE IF NOT EXISTS tasks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        card_id INTEGER,
-        description TEXT NOT NULL,
-        completed INTEGER DEFAULT 0,
-        FOREIGN KEY(card_id) REFERENCES cards(id)
+        date TEXT NOT NULL,
+        task TEXT NOT NULL,
+        priority INTEGER DEFAULT 3,
+        completed INTEGER DEFAULT 0
+        
     )`);
 });
 dbCards.serialize(() => {
@@ -78,7 +79,7 @@ app.delete('/cards/:id', (req, res) => {
 });
 // Rota para obter todas as tarefas
 app.get('/tasks', (req, res) => {
-    db.all('SELECT id, task, date, completed FROM tasks', [], (err, rows) => {
+    db.all('SELECT id, task, date, priority, completed FROM tasks', [], (err, rows) => {
         if (err) {
             res.status(500).json({ error: err.message });
             return;
@@ -87,6 +88,7 @@ app.get('/tasks', (req, res) => {
             id: row.id,
             task: row.task,
             date: row.date, // Formata a data aqui conforme necessário
+            priority: row.priority,
             completed: row.completed === 1 ? true : false // Converte para booleano se necessário
         }));
         res.json({ tasks });
@@ -97,7 +99,7 @@ app.get('/tasks', (req, res) => {
 
 // Rota para adicionar uma nova tarefa
 app.post('/tasks', (req, res) => {
-    const { task, date, completed } = req.body;
+    const { task, date,priority, completed } = req.body;
 
     // Validação se 'date' está no formato correto, como 'YYYY-MM-DD'
     // Inserir no banco de dados
@@ -116,7 +118,7 @@ app.post('/tasks', (req, res) => {
 
         // Lógica para adicionar a tarefa se não existir
         console.log('Adicionando a nova tarefa...');
-        db.run('INSERT INTO tasks (task, date, completed) VALUES (?, ?, ?)', [task, date, completed], function(err) {
+        db.run('INSERT INTO tasks (task, date,priority, completed) VALUES (?, ?, ?,?)', [task, date,priority, completed], function(err) {
             if (err) {
                 res.status(500).json({ error: err.message });
                 return;
@@ -125,6 +127,7 @@ app.post('/tasks', (req, res) => {
                 id: this.lastID,
                 task: task,
                 date: date,
+                priority: priority,
                 completed: completed
             });
         });

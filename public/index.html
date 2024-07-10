@@ -5,36 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Organizador de Tarefas</title>
     <link rel="stylesheet" href="style.css">
+    <link href='https://fullcalendar.io/releases/fullcalendar/4.0.0/core/main.css' rel='stylesheet' />
+    <link href='https://fullcalendar.io/releases/fullcalendar/4.0.0/daygrid/main.css' rel='stylesheet' />
+    <script src='https://fullcalendar.io/releases/fullcalendar/4.0.0/core/main.js'></script>
+    <script src='https://fullcalendar.io/releases/fullcalendar/4.0.0/daygrid/main.js'></script>
+
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/locales/pt-br.js"></script> <!-- Adicionando o arquivo de localização em português -->
+    
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+    
 
 </head>
 <body>
-    <div class="container">
-        <div class="container-task">
-            <h1>Organizador de Tarefas</h1>
-            
-            <div class="task-statistics">
-                <div class="statistic-card">
-                    <p>Total de tarefas: <span id="task-count"></span></p>
-                </div>
-                <div class="statistic-card">
-                    <p>Tarefas completadas: <span id="completed-count"></span></p>
-                </div>
-                <div class="statistic-card">
-                    <p>Tarefas não completadas: <span id="not-completed-count"></span></p>
-                </div>
-                <div class="statistic-card">
-                    <p>Porcentagem de conclusão: <span id="completion-percentage"></span></p>
-                </div>
+    <header class="header">
+        <h1>Organizador de Tarefas</h1>
+        <div class="task-statistics">
+            <div class="statistic-card">
+                <p>Total de tarefas: <span id="task-count"></span></p>
             </div>
-            
+            <div class="statistic-card">
+                <p>Tarefas completadas: <span id="completed-count"></span></p>
+            </div>
+            <div class="statistic-card">
+                <p>Tarefas não completadas: <span id="not-completed-count"></span></p>
+            </div>
+            <div class="statistic-card">
+                <p>Porcentagem de conclusão: <span id="completion-percentage"></span></p>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <div class="container-task-header">
+            <h1>Tarefas</h1>
             <div class="input-container">
                 <input type="text" id="task-input" placeholder="Adicione uma nova tarefa">
-                <button id="add-task-button">Adicionar</button>
+                <select id="priority" name="priority">
+                    <option value=1>Alta</option>
+                    <option value=2>Média</option>
+                    <option value=3 selected>Baixa</option>
+                </select>
+                <button id="add-task-button" ><i class="fa fa-plus"></i></button>
             </div>
+        </div>
+        <div class="container-task">
             <ul id="task-list"></ul>
         </div>
         <div class="container-calendar">
