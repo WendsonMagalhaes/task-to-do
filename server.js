@@ -18,7 +18,7 @@ db.serialize(() => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         date TEXT NOT NULL,
         task TEXT NOT NULL,
-        priority INTEGER DEFAULT 3,
+        priority INTEGER DEFAULT 3,heroku --version
         completed INTEGER DEFAULT 0
         
     )`);

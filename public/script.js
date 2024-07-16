@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const task = taskInput.value.trim();
         const date = selectedDate || new Date().toISOString().split('T')[0]; // Usa a data selecionada ou a data atual
         const priority = obterValorDoSelect('priority');
-
+    
         if (task) {
             fetch('/tasks', {
                 method: 'POST',
@@ -37,70 +37,76 @@ document.addEventListener("DOMContentLoaded", () => {
                         const taskItem = document.createElement("li");
                         taskItem.dataset.id = data.id;
                         taskItem.dataset.priority = data.priority; // Adiciona o atributo de prioridade
-
+    
                         const starContainer = document.createElement("div");
                         starContainer.classList.add("star-container");
                         taskItem.innerHTML = `${formatDate(data.date)}`;
-
+    
                         if (priority == 3) {
                             starContainer.innerHTML += '<i class="fa fa-star priority-star"></i>';
-
+    
                         } else if (priority == 2) {
                             starContainer.innerHTML += '<i class="fa fa-star priority-star"></i><i class="fa fa-star priority-star"></i>';
-
+    
                         } else {
                             starContainer.innerHTML += '<i class="fa fa-star priority-star"></i><i class="fa fa-star priority-star"></i><i class="fa fa-star priority-star"></i>';
-
                         }
-                        // Adicionando newElement dentro de taskItem
+    
+                        // Adicionando starContainer dentro de taskItem
                         taskItem.appendChild(starContainer);
-
+    
                         // Adicionando o restante do conteúdo de taskItem
                         taskItem.innerHTML += `${data.task}`;
-
-                        updateTaskCount();
+    
                         const buttonContainer = document.createElement("div");
                         buttonContainer.classList.add("button-container");
-
-
+    
                         const completeButton = document.createElement("button");
                         completeButton.innerHTML = data.completed ? '<i class="fas fa-redo"></i>' : '<i class="fas fa-check"></i>';
                         completeButton.addEventListener("click", () => {
                             toggleTaskCompletion(data.id, !data.completed);
                         });
                         completeButton.classList.add("complete-button");
-
+    
                         const deleteButton = document.createElement("button");
                         deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
                         deleteButton.addEventListener("click", () => {
                             deleteTask(data.id);
                         });
                         deleteButton.classList.add("delete-button");
-
+    
                         buttonContainer.appendChild(completeButton);
                         buttonContainer.appendChild(deleteButton);
-
+    
                         taskItem.appendChild(buttonContainer);
+    
+                        // Adiciona a nova tarefa na lista
                         taskList.appendChild(taskItem);
-
-                        // Busca todas as tarefas existentes
-                        const tasks = Array.from(taskList.querySelectorAll('li'));
-
-                        // Encontra a posição correta baseada na prioridade (decrescente)
-                        const index = tasks.findIndex(item => data.priority < item.dataset.priority);
-
-                        if (index === -1) {
-                            taskList.appendChild(taskItem); // Insere no final se não encontrou uma prioridade maior
-                        } else {
-                            tasks[index].insertAdjacentElement('beforebegin', taskItem); // Insere antes da task com maior prioridade
-                        }
-
-                        taskInput.value = "";
-                        showAlert('success', 'Tarefa adicionada com sucesso!');
+    
+                        // Ordena as tarefas novamente com base na prioridade e status de conclusão
+                        const sortedTasks = Array.from(taskList.children).sort((a, b) => {
+                            const aCompleted = a.classList.contains('completed');
+                            const bCompleted = b.classList.contains('completed');
+                            
+                            // Ordena primeiro pelo status de completude (concluídas por último)
+                            if (aCompleted && !bCompleted) return 1;
+                            if (!aCompleted && bCompleted) return -1;
+    
+                            // Se ambas forem concluídas ou não, ordena pela prioridade crescente
+                            return a.dataset.priority - b.dataset.priority;
+                        });
+    
+                        // Limpa a lista e adiciona as tarefas ordenadas novamente
+                        taskList.innerHTML = '';
+                        sortedTasks.forEach(task => taskList.appendChild(task));
+    
                         // Atualiza as estatísticas de tarefas após adicionar a tarefa
                         const totalTasks = document.querySelectorAll('#task-list li').length;
                         const completedTasks = document.querySelectorAll('#task-list li.completed').length;
                         updateTaskCount(totalTasks, completedTasks);
+    
+                        taskInput.value = "";
+                        showAlert('success', 'Tarefa adicionada com sucesso!');
                     }
                 })
                 .catch(err => {
@@ -109,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
         }
     }
+    
 
     function handleTaskClick(event) {
         const targetButton = event.target.closest("button");
