@@ -4,7 +4,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
 const app = express();
-const port = 3050;
+const port = 3055;
 
 // Conectar ao banco de dados SQLite
 const db = new sqlite3.Database('tasks.db');
